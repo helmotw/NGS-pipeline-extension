@@ -35,6 +35,7 @@ script:
 
 process fastp_process {
     label 'fastp'
+    publishDir "${output_dir}/trimmed_reads", mode: 'copy'
     input:
         tuple val(sampleName), path(reads)
     output:
@@ -49,23 +50,25 @@ process fastp_process {
 
 process spades_process {
   label 'spades'
+  publishDir "${output_dir}/assembled_genome", mode: 'copy'
   input:
     path reads 
   output:
-    path "${output_dir}/assembled_genome/scaffolds.fasta"
+    path "scaffolds.fasta"
   cpus 4
   memory '8 GB'
   script:
     """
     set -euo pipefail
     echo "Starting SPAdes genome assembly..."
-    spades.py -1 ${reads[0]} -2 ${reads[1]} -o ${output_dir}/assembled_genome
+    spades.py -1 ${reads[0]} -2 ${reads[1]} -o .
     echo "SPAdes genome assembly completed successfully."
     """
 }
 
 process quast_process {
   label 'quast'
+  publishDir "${output_dir}/quast_output", mode: 'copy'
   input:
     path assembled_genome 
   output:

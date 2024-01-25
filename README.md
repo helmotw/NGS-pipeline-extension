@@ -7,7 +7,7 @@ This repository contains a robust pipeline for genome assembly and quality asses
 
 However, the results folder stores examples of computational results in .tsv format after successful execution of a program pipeline in which various methods and parameters were applied to trim the sequenced raw NGS DNA data of the Mycobacterium tuberculosis molecule. 
 
-To make it convenient to study all these reports in the future, the program [**MetricsExtractor.ipynb**](NGS-pipeline/MetricsExtractor.ipynb) was created.
+To make it convenient to study all these reports in the future, the program [**MetricsExtractor.ipynb**](/MetricsExtractor.ipynb) was created.
 
 
 

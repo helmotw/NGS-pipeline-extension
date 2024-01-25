@@ -7,9 +7,9 @@ This repository contains a robust pipeline for genome assembly and quality asses
 
 However, the results folder stores examples of computational results in .tsv format after successful execution of a program pipeline in which various methods and parameters were applied to trim the sequenced raw NGS DNA data of the Mycobacterium tuberculosis molecule. 
 
-To make it convenient to study all these reports in the future, the program MetricsExtractor.ipynb was created, which reads all these sample files of finished results, extracts the most important metrics characterizing the quality of genomic assembly. The data are summarized in this convenient table for further analysis:
+To make it convenient to study all these reports in the future, the program [**MetricsExtractor.ipynb**](NGS-pipeline/MetricsExtractor.ipynb) was created.
 
-![Genome Quality Indicators](images/example_results.png)
+
 
 ## Key Features:
 

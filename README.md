@@ -1,8 +1,15 @@
 # NGS-QC-tools-pipeline
 
+### Intro:
 This repository contains a robust pipeline for genome assembly and quality assessment, designed to streamline the process of genomic data analysis. The pipeline integrates several key bioinformatics tools to ensure accurate and efficient genome assembly.
 
-⚠️ GitHub has a strict limit of 100 MB per file and a recommended limit of 1 GB for the repository size. Therefore, the raw_data folder does not contain any FASTQ files, because they are several times the allowed-to-push file size on GitHub. However, the results folder stores examples of computational results in .tsv format after successful execution of a program pipeline in which various methods and parameters were applied to trim the sequenced raw NGS DNA data of the Mycobacterium tuberculosis molecule. 
+⚠️ GitHub has a strict limit of 100 MB per file and a recommended limit of 1 GB for the repository size. Therefore, the raw_data folder does not contain any FASTQ files, because they are several times the allowed-to-push file size on GitHub. 
+
+However, the results folder stores examples of computational results in .tsv format after successful execution of a program pipeline in which various methods and parameters were applied to trim the sequenced raw NGS DNA data of the Mycobacterium tuberculosis molecule. 
+
+To make it convenient to study all these reports in the future, the program MetricsExtractor.ipynb was created, which reads all these sample files of finished results, extracts the most important metrics characterizing the quality of genomic assembly. The data are summarized in this convenient table for further analysis:
+
+![Genome Quality Indicators](images/example_results.png)
 
 ## Key Features:
 

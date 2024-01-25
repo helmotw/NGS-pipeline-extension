@@ -1,0 +1,23 @@
+Assembly	scaffolds_LengthSlidingHybrid_75_4nt_Q25
+# contigs (>= 0 bp)	216
+# contigs (>= 1000 bp)	153
+# contigs (>= 5000 bp)	117
+# contigs (>= 10000 bp)	98
+# contigs (>= 25000 bp)	58
+# contigs (>= 50000 bp)	30
+Total length (>= 0 bp)	4315732
+Total length (>= 1000 bp)	4284756
+Total length (>= 5000 bp)	4187736
+Total length (>= 10000 bp)	4053754
+Total length (>= 25000 bp)	3359417
+Total length (>= 50000 bp)	2349783
+# contigs	178
+Largest contig	173819
+Total length	4303398
+GC (%)	65.40
+N50	54049
+N90	16002
+auN	62670.2
+L50	27
+L90	84
+# N's per 100 kbp	9.06

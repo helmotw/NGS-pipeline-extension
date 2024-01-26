@@ -1,0 +1,23 @@
+Assembly	scaffolds_SlidingWindow_10nt_q30
+# contigs (>= 0 bp)	223
+# contigs (>= 1000 bp)	151
+# contigs (>= 5000 bp)	117
+# contigs (>= 10000 bp)	98
+# contigs (>= 25000 bp)	62
+# contigs (>= 50000 bp)	30
+Total length (>= 0 bp)	4337191
+Total length (>= 1000 bp)	4303394
+Total length (>= 5000 bp)	4218740
+Total length (>= 10000 bp)	4090138
+Total length (>= 25000 bp)	3487273
+Total length (>= 50000 bp)	2334935
+# contigs	177
+Largest contig	141533
+Total length	4322991
+GC (%)	65.45
+N50	53760
+N90	16002
+auN	58899.2
+L50	27
+L90	83
+# N's per 100 kbp	8.33

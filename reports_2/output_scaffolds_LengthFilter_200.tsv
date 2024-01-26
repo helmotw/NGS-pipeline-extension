@@ -1,0 +1,23 @@
+Assembly	scaffolds_LengthFilter_200
+# contigs (>= 0 bp)	291
+# contigs (>= 1000 bp)	129
+# contigs (>= 5000 bp)	95
+# contigs (>= 10000 bp)	81
+# contigs (>= 25000 bp)	55
+# contigs (>= 50000 bp)	31
+Total length (>= 0 bp)	4368193
+Total length (>= 1000 bp)	4300485
+Total length (>= 5000 bp)	4212400
+Total length (>= 10000 bp)	4112219
+Total length (>= 25000 bp)	3662179
+Total length (>= 50000 bp)	2805793
+# contigs	156
+Largest contig	205900
+Total length	4320207
+GC (%)	65.42
+N50	64262
+N90	17416
+auN	82062.5
+L50	20
+L90	66
+# N's per 100 kbp	7.18

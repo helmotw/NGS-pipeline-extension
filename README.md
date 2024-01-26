@@ -18,8 +18,6 @@ _trimmingCombinations_: A list of different combinations for sequence processing
 
 2. **The trimmingChannel:** A channel that pairs trimming parameters with file pairs, ready to be processed by downstream processes.
 
-![NGS-QC-tools-pipeline](images/NGS-pipeline.drawio.png)
-
 3. **Fastp Process:** This process uses fastp, a tool for fast and high-quality preprocessing of sequencing data. It takes paired-end reads and the trimming parameters as input and generates trimmed sequence files based on the specified parameters. The process dynamically constructs the fastp command based on the trimming combination provided, applying the relevant trimming options.
 
 4. **SPAdes Assembly:** This process runs the SPAdes genome assembler on the trimmed reads to construct genome assemblies. It outputs the assembled scaffolds for each trimming parameter set.
@@ -35,3 +33,7 @@ _trimmingCombinations_: A list of different combinations for sequence processing
 - _Dynamic Command Construction_: The script dynamically constructs commands for fastp based on the trimming strategies, making the workflow highly flexible and adaptable to various preprocessing needs.
 - _Data-driven Execution_: The workflow's execution is driven by the available data and specified parameters, ensuring efficient and parallel processing of multiple samples and trimming strategies.
 - _Scalability_: By leveraging Nextflow, the workflow can be easily scaled and executed across different computational environments, from local machines to high-throughput computing clusters and cloud environments.
+
+## Selection of trimming methods & the naming conventions
+
+![NGS-QC-tools-pipeline](images/NGS-pipeline.drawio.png)

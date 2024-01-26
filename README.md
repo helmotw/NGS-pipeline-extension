@@ -50,6 +50,9 @@ The naming conventions used throughout the script are consistent and logical, ma
 - Hybrids: Names like _QualityAdapterHybrid_Q25_ (containing the word _Hybrid_) suggest a combination of two trimming operations (in this case for example it's the _QualityTrim_Q25_ & the _AdapterTrim_Q25_), providing a clear indication of the processes involved. The number of unique combinations (where each pair consists of two different basic trimming options of the 5 described above excluding combining any trimming methods with themselves) according to the concept of combinations without repetition (also known as "combinations without replacement") is exactly 10. Different sequencing platforms and sample preparations can introduce various types of artifacts or biases in the data. Testing different combinations allows the pipeline to be adaptable to a wide range of data types and qualities.
 - In total, we will be testing 15 different trimming methods during the first run of the program pipeline, and the 16th method is called _NoTrimming_, which, as its name suggests, tells us that no trimming is used in this case. This naming consistency has a huge effect during the execution of a program pipeline. Each piece of data can be traced through the pipeline, from the initial input to the final output, including intermediate steps. All the names of the trimming methods at each step are preserved, facilitating the reproduction of results, as each step's function and input/output relationships are clearly defined. In addition, researchers or future users of the pipeline can easily understand the workflow, modify it, or extend it due to the logical and transparent naming conventions.
 
+Demonstration of naming consistency in data streams after the first run of the program pipeline:
+
+
 ![NGS-QC-tools-pipeline](images/NGS-pipeline.drawio.png)
 
 2. **Channel and Process Definitions:**

@@ -1,0 +1,274 @@
+\appendix
+
+\chapter{}
+\addcontentsline{toc}{chapter}{Appendix — Additional Materials and Technical Details}
+
+\section{Preparing the Development Environment}
+
+This diversion, though not directly tied to the subsequent discussion on pipeline progress but concentrate exclusively on software configurations, could be invaluable for other researchers. The setup process was particularly labor-intensive, which justifies the comprehensive explanation provided. \textit{Singularity} (\url{https://docs.sylabs.io/guides/latest/user-guide/quick_start.html}), though initially developed for Linux, can be run on Windows and Mac systems through the use of virtual machines. For Mac users, as in this case, the preliminary step entails the installation of virtualization software, crafting a Linux disk image, and establishing a virtual machine to facilitate the operation of Linux services and applications in a segregated setting, a step deemed essential for employing Singularity. On macOS, tools like VirtualBox, Vagrant, and Vagrant Manager were effortlessly installed via Homebrew and Cask. The complication arose with the Apple M1 chip, which operates on ARM architecture, diverging from the conventional x86\_64 architecture seen in Intel/AMD processors. Considering the progressive development of virtualization support for ARM architecture, considerable effort was dedicated to identifying an appropriate solution. \textit{Parallels Desktop} (\url{https://www.parallels.com/products/desktop/}) was identified as the most straightforward resolution to this challenge. Following this, all subsequent steps were replicated in a Linux Ubuntu setting:
+
+\begin{verbatim}
+# Download Singularity image
+wget https://depot.galaxyproject.org/singularity/sra-tools%3A3.0.9--h9f5acd7_0
+# Rename the file due to its unwieldy name
+mv sra-tools\:3.0.9--h9f5acd7_0 sratools.sif
+# Use prefetch to download the data for the specified run in SRA format
+singularity exec sratools.sif prefetch SRR26630744
+# Convert downloaded SRA data to FASTQ format, --split-3 is required for
+# paired-end reads
+singularity exec sratools.sif fasterq-dump --split-3 SRR26630744
+\end{verbatim}
+
+Furthermore, a complication was faced with the Go binary file, essential for installing Singularity, due to incompatibility with the architecture of Apple's M1 chip. This led to the inability to employ a version of Go tailored for the ARM64 architecture, necessitating the use of an alternate computer equipped with a Linux Ubuntu system and an Intel processor. An attempt was made to remotely install Singularity using \textit{AnyDesk software} (\url{https://anydesk.com/en}), following a comprehensive review of the installation guidelines available at \url{http://sylabs.io}. Regrettably, this method was also found to be overly time-consuming.
+
+Consequently, it was decided to bypass Singularity and directly install SRA-Tools for command-line usage instead. The compatible version for the computer was located at \url{https://github.com/ncbi/sra-tools/wiki/01.-Downloading-SRA-Toolkit}. The procedure involves downloading SRA-formatted data using prefetch and converting it to \gls{fastq} with fasterq-dump. It's important to highlight the use of the --split-3 option for processing paired-end \gls{read}s, illustrating the steps necessary for this approach:
+
+\begin{verbatim}
+./prefetch SRR26630744
+./fasterq-dump --split-3 SRR26630744
+\end{verbatim}
+
+This procedure successfully produced the needed for the Paired Genomic \gls{sequencing} Analysis \textbf{SRR26630744\_1.fastq} and \textbf{SRR26630744\_2.fastq} files. This analysis requires \gls{read}s from both ends of a \gls{dna} fragment, a technique referred to as \gls{paired-end}. \gls{paired-end} usually involves two files, each containing reads from one end of the fragment. Although this solution might seem direct, reaching this stage was a prolonged effort. Moreover, initial attempts to run commands in the Mac terminal encountered obstacles due to security settings, which required additional adjustments to the configuration.
+
+
+\section{Technical Annexes and Codes}
+
+Beyond developing the main software pipeline, an additional tool, \textbf{MetricsExtractor.ipynb}, was created and is available on GitHub at \url{https://github.com/shliamin/NGS-pipeline/blob/main/MetricsExtractor.ipynb}. This supplementary program is crucial for analyzing and visualizing data produced by the pipeline. By evaluating key \gls{metrics} from different pipeline executions, MetricsExtractor.ipynb supports a scientific research methodology aimed at optimizing the \gls{trimming} process of sequenced data. 
+
+\subsection{Generated Data}\label{sec:generated_data}
+
+To facilitate a comprehensive understanding and ensure transparency in the research process, all relevant data generated across various stages of pipeline execution are made available online. These datasets provide insights into the relevant outcomes of each experimental run of the pipeline, allowing for detailed scrutiny and comparison:
+
+\begin{itemize}
+    \item Data from the \textbf{first execution} of the software pipeline can be found at \url{https://github.com/shliamin/NGS-pipeline/tree/main/reports}.
+    \item Results following the \textbf{second execution} are accessible at \url{https://github.com/shliamin/NGS-pipeline/tree/main/reports_2}.
+    \item The \textbf{third round} of execution data is available at \url{https://github.com/shliamin/NGS-pipeline/tree/main/reports_3}.
+    \item Additionally, data from \textbf{trials exploring the extremities} of processing parameters are provided at \url{https://github.com/shliamin/NGS-pipeline/tree/main/TrialsExtremes}.
+\end{itemize}
+
+These resources not only highlight the iterative and exploratory essence of scientific research but also act as a valuable archive for the academic community. They provide a means to analyze, replicate, or further develop the discoveries made in this study, fostering an environment of continuous learning and innovation.
+
+\subsection{Data Extraction}\label{sec:data_extraction}
+
+Here are code snippets from the mentioned program, the use of which is explained in the main body of the thesis. In order to keep the document readable, only the most relevant parts of the code are given here with their explanations, the whole code can be seen at the GitHub link provided above.
+
+Below is the \autoref{lst:extraction-function} demonstrates the \textit{Metrics Extraction Function} relevant to our study from the data generated by the software pipeline. 
+
+\begin{lstlisting}[language=Python, caption=Metrics Extraction Function, label={lst:extraction-function}]
+import pandas as pd
+
+def extract_required_metrics(report_path):
+    # Reading the report file into a DataFrame
+    df = pd.read_csv(report_path, sep='\t', header=None, names=['Metric', 'Value'])
+    
+    metrics = {} # Dictionary to store metrics
+    required_metrics = [
+        ('Total length', 'Total length'),
+        ('GC', 'GC (%)'),
+        ('Largest contig', 'Largest Contig'),
+        ('N50', 'N50'),
+        ('N90', 'N90'),
+        ('L50', 'L50'),
+        ('L90', 'L90'),
+        ('# N\'s per 100 kbp', '# N\'s per 100 kbp')
+    ]
+    
+    # Extracting required metrics
+    for metric_pattern, metric_name in required_metrics:
+        value = df[df['Metric'].str.contains(metric_pattern)]['Value'].values
+        metrics[metric_name] = value[0] if value.size > 0 else 'N/A'
+    
+    return metrics
+\end{lstlisting}
+
+The core functionality involves reading report files by using the \textit{Metrics Extraction Function} (\autoref{lst:extraction-function}), each containing data in a tab-separated format, and extracting key \gls{metrics}. The process is summarized as follows (\autoref{lst:extracting_metrics}):
+
+\begin{lstlisting}[language=Python, label={lst:extracting_metrics}, caption=Extracting Metrics from Report Files]
+# Extracting and saving data from all report files
+all_metrics_data = {}
+for report_file in report_files:
+    report_path = os.path.join(reports_dir, report_file)
+    trimming_param = report_file.replace('report_scaffolds_', '').replace('.tsv', '')
+    metrics = extract_required_metrics(report_path)
+    if metrics:
+        all_metrics_data[trimming_param] = metrics
+\end{lstlisting}
+
+After extracting the \gls{metrics} (\autoref{lst:extracting_metrics}), the data is organized and sorted according to predefined criteria\footnote{This criteria varies and is described in the MetricsExtractor.ipynb program on a case-by-case basis} for better analysis and presentation (\autoref{lst:sorting_extracted_metrics}):
+
+\begin{lstlisting}[language=Python, label={lst:sorting_extracted_metrics}, caption=Sorting Extracted Metrics]
+# Sorting the DataFrame according to the specified order
+sorted_metrics_df = all_metrics_df.set_index('Trimming Parameters').reindex(sorting_order).reset_index()
+\end{lstlisting}
+
+
+This is how the process of extraction of TSV files generated with the software pipeline is described. Each new start of the pipeline selects a new sorting order criteria suitable for this stage of the study. Thus, by changing only a small part of the parameters, new data can be obtained steadily.
+
+\subsection{Data Normalization}\label{sec:data_normalization}
+This subsection discusses the methodology for normalizing data metrics and their subsequent visualization through a \gls{heatmap} (\autoref{lst:heatmap}), facilitating the comparative analysis of Genomic \gls{metrics}.
+
+Normalization (\autoref{lst:data_norm}) involves adjusting the Data \gls{metrics} to a common scale without distorting differences in the ranges of values. This process is crucial for comparing \gls{metrics} across different \gls{trimming} Methods.
+
+\begin{lstlisting}[language=Python, label={lst:data_norm}, caption=Data Normalization Process]
+# Ensure the data is numerical and normalize it
+for column in sorted_metrics_df.columns[1:]:
+    sorted_metrics_df[column] = pd.to_numeric(sorted_metrics_df[column], errors='coerce')
+
+# Calculate the base values for comparison
+base_values = sorted_metrics_df[sorted_metrics_df['Trimming Parameters'] == 'NoTrimming'].iloc[0, 1:]
+
+# Normalize the data relative to the base values
+rows_list = []
+for index, row in sorted_metrics_df.iterrows():
+    norm_row = {'Trimming Parameters': row['Trimming Parameters']}
+    for metric in sorted_metrics_df.columns[1:]:
+        if base_values[metric] != 0:
+            norm_row[metric] = (row[metric] - base_values[metric]) / base_values[metric]
+        else:
+            norm_row[metric] = 0
+    rows_list.append(norm_row)
+
+norm_deviations = pd.DataFrame(rows_list)
+\end{lstlisting}
+
+\subsection{Visualization with Heatmap}\label{sec:visualization_heatmap}
+The normalized data is visualized using a \gls{heatmap} ((\autoref{lst:heatmap})), which represents the \gls{deviation} of each metric from the pipeline established by the "No Trimming" method.
+
+\begin{lstlisting}[language=Python, label={lst:heatmap}, caption=Heatmap Visualization]
+# Visualize the normalized deviations
+plt.figure(figsize=(12, 8))
+sns.heatmap(norm_deviations.iloc[:, 1:], annot=True, cmap='coolwarm', center=0, yticklabels=norm_deviations['Trimming Parameters'])
+plt.title('Normalized Deviation of Genome Assembly Metrics from No Trimming')
+plt.xlabel('Assembly Metrics')
+plt.ylabel('Trimming Methods')
+plt.xticks(rotation=45)
+plt.show()
+\end{lstlisting}
+
+The normalization and visualization process (\ref{sec:data_normalization} and \ref{sec:visualization_heatmap}) enables a clear, comparative view of how different \gls{trimming} Methods affect \gls{genome} \gls{metrics}, highlighting the effectiveness of each method in relation to untrimmed data.
+
+
+\subsection{Calculation of The "N Ratio"}\label{sec:calculation_n_ratio}
+This subsection elaborates on the calculation of a specific ratio, referred to as the N Ratio, and its visualization through a \gls{bar} Graph to compare the effect of different \gls{trimming} Methods on genomic data.
+
+The N Ratio is calculated (\autoref{lst:n_ratio_calc}) to establish a relationship between the \gls{n's per 100 kbp} and the \gls{n50} \gls{metrics}. This ratio is then scaled by a factor of 10,000 for better representation.
+
+\begin{lstlisting}[language=Python, label={lst:n_ratio_calc}, caption=Calculating of the "N Ratio"]
+# Calculate N Ratio and add it as a new column
+sorted_metrics_df['N_Ratio_x10k'] = (sorted_metrics_df['# N\'s per 100 kbp'] / sorted_metrics_df['N50']) * 10000
+\end{lstlisting}
+
+\subsection{Visualization of The "N Ratio" With A Bar Graph}\label{sec:visualization_n_ratio}
+The calculated N Ratios are visualized using \gls{bar} (\autoref{lst:n_ratio_visual}), highlighting the comparison across different \gls{trimming} Methods with a specific focus on the 'NoTrimming' method, marked distinctly for easy identification.
+
+\begin{lstlisting}[language=Python, label={lst:n_ratio_visual}, caption=Visualization of the "N Ratio"]
+# Visualization of N Ratio across trimming methods
+plt.figure(figsize=(12, 8))
+barplot = sns.barplot(x='Trimming Parameters', y='N_Ratio_x10k', data=sorted_df)
+plt.title('N_Ratio (# N\'s per 100 kbp / N50) for Different Trimming Methods (Values x10,000)')
+plt.xlabel('Trimming Methods')
+plt.ylabel('N_Ratio (x10,000)')
+
+# Highlight 'NoTrimming' method in red
+for label in barplot.get_xticklabels():
+    if label.get_text() == 'NoTrimming':
+        label.set_color('red')
+plt.xticks(rotation=45, ha='right')
+plt.tight_layout()
+plt.show()
+\end{lstlisting}
+
+
+The methodology described in subsections \ref{sec:calculation_n_ratio} and \ref{sec:visualization_n_ratio} facilitates an insightful comparison of the impact of various \gls{trimming} Methods on the Genomic \gls{metrics}, specifically through the lens of the N Ratio.
+
+
+
+\subsection{Data Filtering: The "Length Filter" Trimming Method} \label{sec:length_filter_trimming}
+Data corresponding to the "Length Filter" \gls{trimming} Method were isolated for detailed analysis. This involved filtering the dataset to include only those entries where the \gls{trimming} Parameters indicated the use of a length-based filtering approach.
+
+The filtered data was then sorted based on the specific length filter parameters, allowing for a coherent sequence when plotting. This sorting ensures that the visual representation accurately reflects the trend as the length filter parameter is adjusted.
+
+\subsubsection{Creating Figures for Comparative Analysis}
+A figure comprising two subplots was created to facilitate a comparative analysis of two key metrics: \gls{n50} and the \gls{n's per 100 kbp}. 
+
+\begin{itemize}
+    \item The first subplot focuses on the variation of the \gls{n50} metric as the length filter parameter changes. It employs a line graph to connect data points, providing a clear visual representation of how \gls{n50} values adjust in response to changes in the length filter setting.
+    \item The second subplot shifts attention to the change in the \gls{n's per 100 kbp}, again utilizing a line graph to depict the relationship between the length filter parameter and this specific metric.
+\end{itemize}
+
+Both subplots include markers at data points, gridlines for easier reference, and legends for metric identification, enhancing the clarity and interpretability of the presented data.
+
+\subsection{Visualization with Matplotlib and Seaborn (Scatter Plot)} \label{sec:length_filter_trimming_visualisation}
+The visualizations (\autoref{lst:scatter_plot}) were generated using Matplotlib, with specific attention to plot aesthetics such as color coding—blue for \gls{n50} and red for the \gls{n's per 100 kbp}—to differentiate between the \gls{metrics} clearly. The choice of line and marker styles ensures a seamless narrative of data trends across the length filter parameters.
+
+\begin{lstlisting}[language=Python, label={lst:scatter_plot}, caption=Scatter Plot Visualization of Metrics Variation]
+# Code snippet for plotting
+fig, axs = plt.subplots(1, 2, figsize=(20, 6))
+# N50 Plot
+axs[0].plot(length_filter_params, length_filter_data.loc[length_filter_sorted, 'N50'], marker='o', linestyle='-', color='blue', label='N50')
+# Number of N's per 100 kbp Plot
+axs[1].plot(length_filter_params, length_filter_data.loc[length_filter_sorted, "# N's per 100 kbp"], marker='o', linestyle='-', color='red', label="# N's per 100 kbp")
+\end{lstlisting}
+
+This thorough approach highlights the critical role of systematic data preparation and the power of visual analytics in revealing the effects of different Genomic Data \gls{trimming} Methods.
+
+
+
+
+
+\subsection{Data Filtering: The "Sliding Window" Trimming Method} \label{sec:sliding_window_trimming}
+The dataset was filtered to focus exclusively on the entries pertaining to the "Sliding Window" \gls{trimming} Method. This selective process is critical for analyzing the specific impact of window size and quality thresholds on the N Ratio.
+
+The parameters associated with the "Sliding Window" method, namely window sizes and quality thresholds, were extracted and converted into numerical format. This preparation stage is essential for accurate and meaningful plotting.
+
+\subsection{Visualization with Plotly Using 3D Scatter Plot } \label{sec:sliding_window_trimming_visualisation}
+A 3D \gls{scatter} was created using Plotly to visualize (\autoref{lst:3d_scatter_plot}) the relationship between window size, quality threshold, and the N Ratio metric. This visualization technique provides a comprehensive view of the data, allowing for an in-depth analysis of how varying the window size and quality threshold parameters influence the N Ratio.
+
+\begin{lstlisting}[language=Python, label={lst:3d_scatter_plot}, caption=Creating 3D Scatter Plot with Plotly]
+import plotly.graph_objects as go
+
+# Create a Plotly 3D scatter plot for N50
+fig = go.Figure(data=[go.Scatter3d(
+    x=window_sizes,
+    y=quality_thresholds,
+    z=sliding_window_data['N_Ratio_x10k'],
+    mode='markers',
+    marker=dict(size=5, color='blue', opacity=0.8)
+)])
+
+fig.update_layout(title='3D Scatter Plot of N_Ratio_x10k for Sliding Window Trimming',
+                  scene=dict(xaxis_title='Window Size',
+                             yaxis_title='Quality Threshold',
+                             zaxis_title='N_Ratio_x10k'))
+fig.show(renderer="browser")
+\end{lstlisting}
+
+This approach highlights the utility of 3D Scatter Plots in revealing complex relationships within the data, facilitated by Plotly's interactive visualization capabilities. The \gls{scatter} effectively illustrates the dependency of the N Ratio on both the window size and quality threshold, providing insights that are crucial for optimizing the \gls{trimming} Process.
+
+\textbf{A video demonstration} of this \gls{trimming} Method evaluation using 3D Scatter Plots is available for downloading at \url{https://github.com/shliamin/NGS-pipeline/blob/main/video/Sliding%20Window%20Data%20Visualisation.mov}.
+
+
+
+
+
+
+
+\section{Supplementary Literature Review}
+
+Throughout the development of the research, an extensive range of supplementary literature was reviewed to enhance the foundational understanding and methodological approach. These additional resources, not originally part of the primary literature collection, offered significant insights and technical advice pertinent to achieving the study's goals.
+
+Delving into Nextflow, as detailed on its \textit{official website} (\url{https://www.nextflow.io/index.html}), provided a comprehensive overview of this workflow tool's capabilities in facilitating scalable and reproducible scientific workflows. The integration of Nextflow is seen as essential for efficiently managing complex data analysis pipelines, highlighting its significant role in modern bioinformatics research.
+
+Additionally, the study involved a thorough examination of the SPAdes algorithm, as described in the publication available on the \textit{National Center for Biotechnology Information} (\url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3342519/}). This algorithm's role in facilitating accurate genome assemblies was critically assessed, highlighting its relevance to the research's genetic analysis component.
+
+The dissertation by Alexey Gurevich, accessible via \textit{Saint Petersburg State University's repository} (\url{https://disser.spbu.ru/files/2018/disser_gyrevich_aa.pdf}), and the documentation of his dissertation defense (\url{https://youtu.be/Hv8Bt7rVt8Q}) were also reviewed. This work on the QUAST tool provided valuable perspectives on quality assessment for \gls{genome} Assemblies, enriching the research methodology with critical evaluation techniques for genomic data.
+
+To broaden the literature base, the study was supplemented with a selection of books that provide comprehensive insights into bioinformatics and genomic data analysis.
+
+1. \textit{Bioinformatics Data Skills} by Vince Buffalo (O'Reilly Media, 2015) - A practical guide to the skills needed to efficiently handle and analyze bioinformatics data, from data cleaning to advanced analyses.
+
+2. \textit{Biological Sequence Analysis: Probabilistic Models of Proteins and Nucleic Acids} by Richard Durbin, Sean R. Eddy, Anders Krogh, and Graeme Mitchison (Cambridge University Press, 1998) - A foundational text on the application of probabilistic models to biological sequences, providing essential methodologies for analyzing \gls{dna}, RNA, and protein sequences.
+
+These resources were instrumental in broadening the theoretical base and methodological framework of the research, leading to a more detailed and nuanced comprehension of the study's subject matter.
+
+

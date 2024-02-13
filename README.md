@@ -9,6 +9,7 @@ However, the results folder stores examples of computational results in .tsv for
 
 📈 To make it convenient to study all these reports in the future, the program [**MetricsExtractor.ipynb**](/MetricsExtractor.ipynb) was created.
 
+💡 A detailed description of the software pipeline in the form of a PDF document written in academic English (and corresponding LaTeX files) can also be found in this repository. 
 
 
 ## Key Features:

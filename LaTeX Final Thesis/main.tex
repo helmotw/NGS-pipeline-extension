@@ -1,0 +1,88 @@
+%Dokumenteinstellungen und Anpassungen
+\input{resources/settings/settings}
+\input{resources/styles/adjustments}
+
+%Titelformen - gewünschtes Layout einkommentieren
+
+%Research paper
+%\include{titles/research_papger}
+%\subTitle{Ein optionaler Untertitel der Arbeit}
+%\researchPart{A}
+
+%Verzeichnisse generieren
+\makeglossaries
+\loadglsentries{references/glossary_acronyms.tex}
+\setacronymstyle{long-short}
+
+\makeindex[columns=2, title=Stichwortverzeichnis, options= -s resources/styles/indexstyle.ist, intoc]
+\indexsetup{level=\chapter*,toclevel=chapter}
+
+%Start des Inhalts
+\begin{document}
+
+%%Graduation
+\include{titles/graduation}
+\gradeType{Bachelor of Science (B.Sc.)}
+\firstExaminer{Prof. Piotr Wojciech Dabrowski}
+\secondExaminer{Prof. Hermann Heßling}
+
+%Angaben zur Arbeit und dem Author (von beiden Layouts genutzt)
+\title{Development of a Pipeline for the Benchmarking of \\Next-Generation
+Sequencing Quality Control Tools}
+%\title{Next-Generation Sequencing Data Processing and Assessment: \\Comprehensive Software Pipeline}
+\author{Efim Shliamin}
+\matrikelnr{s0573270}
+\courseOfStudy{Applied Computer Science}
+\submitDate{04.02.2024}
+
+%Notwendiger Workaround
+\pagenumbering{alph}
+
+%Deckblatt erzeugen
+\maketitle
+
+\pagenumbering{Roman}
+
+\include{chapter/Executive Summary} \clearpage
+\include{chapter/Acknowledgements} \clearpage
+
+%Inhaltsverzeichnis
+\tableofcontents \newpage
+
+%Hauptteil
+\pagenumbering{arabic}
+\input{chapter/Introduction} \clearpage
+\input{chapter/Theoretical Fundamentals} \clearpage
+\input{chapter/Pipeline Design and Execution} \clearpage
+\input{chapter/Results} \clearpage
+\input{chapter/Discussion} \clearpage
+\input{chapter/Future Prospects} \clearpage
+
+%Anhang
+\pagenumbering{Alph}
+
+%Abbildungsverzeichnis
+\listoffigures \clearpage
+%Tabellenverzeichnis
+\listoftables \clearpage
+%Quelltextverzeichnis
+\lstlistoflistings \clearpage
+%Stichwortverzeichnis
+%\printindex \clearpage
+%Glossar
+%\printglossary[title={Glossar}] \clearpage
+%Abkürzungsverzeichnis
+\printglossaries[style=dottedlocations,type=\acronymtype,title={Abkürzungsverzeichnis}] \clearpage
+
+%Literaturverzeichnisse (getrennt nach Stichwort)
+\printbibliography[heading=bibintoc, keyword={book}, title={Bibliography}]\clearpage
+\printbibliography[heading=bibintoc, keyword={online}, title={Online Sources}]\clearpage
+\printbibliography[heading=bibintoc, keyword={image}, title={Image Sources  }]\clearpage
+
+% Anhang
+\input{chapter/Appendix — Additional Materials and Technical Details}
+
+% Eigenständigkeitserklärung
+\input{chapter/Declaration of Authenticity}
+
+\end{document}

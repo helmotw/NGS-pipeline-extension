@@ -1,0 +1,38 @@
+\chapter{Discussion}
+
+\textbf{Study Overview and Reproducibility.} This study embarked upon a comprehensive exploration of various trimming strategies applied to sequenced data, to discern their impact on the quality of genomic assembly. To ensure the reproducibility of our results, meticulous documentation of every procedural step, utilized parameters, and data processing conditions was maintained. This effort culminates in the provision of all data, alongside the LaTeX documentation of this work, which is made available in section \ref{sec:generated_data} of the mentioned repository, facilitating future research endeavors.
+
+\textbf{Results Interpretation and Novel Metric Introduction.} In section \ref{sec:results}, we delved into a detailed interpretation of the findings, shedding light on the merits and limitations inherent to each trimming approach. A pivotal aspect of this study is the introduction of a novel metric, termed the N\_value, specifically devised to evaluate the efficacy of different trimming methods. This investigation led to the proposition of three iterative trimming strategies, detailed in sections \ref{sec:1st_trimming_stratrgy}, \ref{sec:2nd_trimming_strategy}, and \ref{sec:3rd_trimming_stratrgy}, through which we identified the most efficacious approach.
+
+\textbf{Significance of the Software Pipeline.} The empirical evidence gathered through this research underscores the significance of the software pipeline developed, affirming its utility as an effective tool in the scientific research arsenal. We encourage fellow researchers in the field to engage with the techniques delineated herein and embark on their quest to refine data-trimming strategies, aiming to enhance the stability and reliability of research outcomes.
+
+\textbf{Selective Focus and Iterative Trimming.} Furthermore, this work facilitated the assembly of approximately 100 different genomic assemblies, albeit only 48 are discussed within this paper. This selective focus has underscored a guiding principle: the application of trimming strategies should be iterative, allowing for a nuanced approach to achieving optimal results. A thorough analysis is recommended following each strategy application, setting the stage for the subsequent trimming iteration.
+
+\textbf{Limitations and Computational Efficiency.} However, a notable limitation of this investigation stems from its oversight of the computational efficiency of each trimming method, considering the assembly and analysis of each genome, compounded by the reliance on a singular local computer's computational resources (\autoref{table:workflow-execution-summary}). This aspect presents a fertile ground for future research, aiming to bridge this gap and enhance the efficiency of genomic data processing.
+
+\textbf{Concluding Remarks and Future Directions.} In conclusion, while this study makes significant strides toward understanding and improving trimming strategies for genomic data, it acknowledges the necessity for continued research, particularly in optimizing computational resources. We provide a foundation upon which future studies can build, aiming not only to refine these methods but also to expand the horizons of genomic research. Access to our data and documentation, as specified in section \ref{sec:generated_data}, invites the scientific community to further this exploration, contributing to the collective advancement of our understanding in this field.
+
+
+\begin{table}[h]
+\centering
+\caption{Summary of Nextflow Workflow Execution Log}
+\label{table:workflow-execution-summary}
+\begin{tabular}{ll}
+\hline
+\textbf{Attribute} & \textbf{Details} \\
+\hline
+Workflow Command & \texttt{nextflow run main.nf} \\
+Nextflow Version & 23.10.0 \\
+Execution Date & Feb-03 \\
+System & Mac OS X 14.0 \\
+Java Runtime & OpenJDK 64-Bit Server VM 17.0.6+10-LTS \\
+CPU Cores & 8 \\
+Memory & 8 GB \\
+Processes & \texttt{fastp\_process}, \texttt{spades\_process}, \texttt{quast\_process} \\
+Task Status & All tasks completed successfully \\
+Peak CPUs & 4 \\
+Peak Memory & 8 GB \\
+Execution Complete & Yes \\
+\hline
+\end{tabular}
+\end{table}

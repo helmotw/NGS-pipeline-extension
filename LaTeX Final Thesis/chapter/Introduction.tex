@@ -1,0 +1,25 @@
+\chapter{Introduction}
+\section{Background}
+
+In the Next-Generation Sequencing (\gls{ngs}) era, accurate \gls{assembly} is crucial \cite{Elaine2015} \cite{Lavanya2021} \cite{Wang2017} \cite{Jones2004} for understanding organisms like Mycobacterium tuberculosis, including their genetic diversity and drug resistance \cite{Heupink2021} \cite{Netikul2022} \cite{SanchezCorrales2021}. \gls{trimming}, the process of removing low-quality bases and adapters, is vital for data quality and effective \gls{assembly}. The next paragraphs summarize studies on the impact of trimming algorithms on \gls{assembly} quality and the importance of tailored trimming strategies for optimal data analysis.
+
+\section{Evaluation of Trimming Algorithms}
+
+Nine trimming algorithms were assessed across four datasets for their influence on \gls{assembly}, RNA mapping, and genotyping in \gls{ngs} data \cite{Fabbro2013}. The "SeqPurge: highly-sensitive adapter trimming for paired-end NGS data" article \cite{Sturm2016} concluded that SeqPurge excels in adapter trimming for paired-end sequencing data due to its high sensitivity, error tolerance, and efficiency, surpassing other tools in RNA mapping and \gls{assembly} scenarios. Sewe et al. \cite{Sewe2022} demonstrated how \gls{trimming} enhances the quality of \gls{genome}s assembled from \gls{ngs} \gls{read}s, using the optimized tool Trimmomatic to compare the quality of transcriptomes from both trimmed and untrimmed \gls{read}s.
+
+Liao et al. \cite{Liao2020} described the PE-Trimmer algorithm, a trimming tool for \gls{ngs} sequencing data, highlighting its superior results compared to other trimmers, though not explicitly discussing the pros and cons of the \gls{trimming} process. Wagner et al. \cite{Wagner2021} found that quality-based and fixed-width \gls{trimming} could improve SNP analysis in enteric pathogen outbreaks in \gls{ngs} data, suggesting different strategies may be required for \gls{assembly}. Yang et al. \cite{Yang2019} observed that \gls{trimming} low-quality bases from sequencing \gls{read}s led to shorter \gls{scaffold}s but saved computational time, without significantly impacting \gls{assembly} completeness. This suggests a need for specific trimming strategies based on the intended use of Assembled \gls{genome}s.
+
+\section{Challenges in NGS Data}
+
+\gls{ngs} data can present issues like low-quality fragments, adapters, duplicated \gls{read}s, contamination, overlaps, varying \gls{read}s lengths, homopolymeric regions, and sequencing errors. \gls{trimming} helps mitigate these issues, improving \gls{assembly} quality and analysis accuracy. However, \gls{trimming} can also result in data loss, necessitating a balance between data preservation and quality.
+
+Our study evaluates the impact of various \gls{trimming} methods on Mycobacterium tuberculosis \gls{assembly} metrics. We use a robust software pipeline, including fastp \cite{fastp}, SPAdes \cite{spades}, and QUAST \cite{quast}, running through the Nextflow framework \cite{nextflow} for parallel processing. Our methodology, comparing trimmed and untrimmed datasets, seeks to understand \gls{trimming}'s effect on \gls{assembly} quality, aiding in selecting methods that balance efficiency with genomic integrity for Mycobacterium tuberculosis and other organisms.
+
+For data analysis and visualization, we utilized Jupyter Notebook \cite{notebook} integrated with the Pandas \cite{pandas} and NumPy \cite{numpy} libraries. Pandas was instrumental in data manipulation, while NumPy was pivotal in computational tasks, particularly with large numbers. Matplotlib \cite{matplotlib} and Seaborn \cite{seaborn} greatly contributed to creating a variety of visualizations, ranging from static graphs to interactive ones.
+
+Plotly \cite{plotly} further enhanced our toolbox with interactive, web-based illustrations essential for examining \gls{assembly} metrics. This combination of tools in Jupyter Notebook played a significant role in effectively assessing and refining our software pipeline, having substantial implications for the future of genomics research.
+
+
+
+
+

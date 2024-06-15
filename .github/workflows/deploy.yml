@@ -1,0 +1,40 @@
+name: Deploy Jupyter Notebook to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: Install Jupyter
+      run: |
+        python -m venv myenv
+        source myenv/bin/activate
+        pip install jupyter
+
+    - name: Convert notebook to HTML
+      run: |
+        source myenv/bin/activate
+        jupyter nbconvert --to html mynotebook.ipynb
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./

@@ -1,2 +1,0 @@
-Assembly	# contigs (>= 0 bp)	# contigs (>= 1000 bp)	# contigs (>= 5000 bp)	# contigs (>= 10000 bp)	# contigs (>= 25000 bp)	# contigs (>= 50000 bp)	Total length (>= 0 bp)	Total length (>= 1000 bp)	Total length (>= 5000 bp)	Total length (>= 10000 bp)	Total length (>= 25000 bp)	Total length (>= 50000 bp)	# contigs	Largest contig	Total length	GC (%)	N50	N90	auN	L50	L90	# N's per 100 kbp
-scaffolds_LengthFilter_45	288	124	94	80	54	32	4370518	4303421	4230225	4136978	3694381	2909684	148	209097	4321017	65.41	65136	17421	83986.0	19	64	6.94

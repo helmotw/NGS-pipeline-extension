@@ -4,23 +4,30 @@ From: ubuntu:20.04
 %post
     # Aktualisiere Package List und installiere Dependencies
     apt-get update && apt-get install -y \
-        git \
-        build-essential \
-        zlib1g-dev \
-        wget
+        wget \
+        python2.7 \
+        libpython2.7 \
+        tar \
+        gzip \
+        build-essential
 
-    # Downloade und installiere Seqtk
-    cd /opt
-    git clone https://github.com/lh3/seqtk.git
-    cd seqtk
-    make
+    # Downloade und installiere Clover
+    wget https://oz.nthu.edu.tw/~d9562563/data2/clover-2.0.tar.gz
 
-    # Symlink seqtk zu /usr/local/bin 
-    ln -s /opt/seqtk/seqtk /usr/local/bin/seqtk
+    tar -zxvf clover-2.0.tar.gz -C /opt
 
-    # Clean up
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    cd /opt/clover-2.0
+
+    # Make Clover executable
+    chmod +x /opt/clover-2.0/clover
+
+    # Clover to the PATH
+    ln -s /opt/clover-2.0/clover /usr/local/bin/clover
 
 %environment
     # Set environment variables
-    export PATH=/usr/local/bin:$PATH
+    export PATH=/opt/clover-2.0:$PATH
+    export PYTHONPATH=/usr/bin/python2.7
+
+%runscript
+    exec /opt/clover-2.0/clover "$@"

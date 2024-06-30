@@ -1,5 +1,8 @@
 // Define input and output directory parameters
 params.input_dir = 'raw_data'
+params.tools_dir = 'tools' //Container location
+params.sample_seed = 100
+params.sample_percentage = 100
 
 // Define a list of different trimming combinations for sequence processing
 def trimmingCombinations = [
@@ -21,22 +24,36 @@ def trimmingCombinations = [
   "NoTrimming"
 ]
 
-/* Create a channel with trimming combinations 
-  and pair them with file pairs from the input directory
+/* Create for input sampling
 */
-Channel
-  .from(trimmingCombinations)
-  .combine(Channel.fromFilePairs("${params.input_dir}/*_{1,2}.fastq"))
-  .map { trimParams, sampleId, files -> 
-    println("Trim Params: ${trimParams}, Files: ${files}") 
-    tuple(trimParams, files) 
-  }
-  .set { trimmingChannel }
 
+  Channel
+    .fromFilePairs("${params.input_dir}/*{1,2}.fastq")
+    .set { seqtkInputChannel }
+
+process seqtk_process {
+  label 'seqtk'
+  container "${params.tools_dir}/seqtk.sif"
+
+  input:
+    tuple val(sampleId), file(reads)
+
+  output:
+    tuple val(sampleId), file('sampled/*_{1,2}.fastq')
+
+  script:
+    """
+    set -euo pipefail
+    mkdir -p sampled
+    seqtk sample -s${params.sample_seed} ${reads[0]} ${params.sample_percentage/100} > sampled/${reads[0].baseName}.fastq
+    seqtk sample -s${params.sample_seed} ${reads[1]} ${params.sample_percentage/100} > sampled/${reads[1].baseName}.fastq
+    """
+}
 
 process fastp_process {
   label 'fastp'
   tag "${trimParams}_${reads[0].getName()}"
+  container "${params.tools_dir}/fastp.sif"
 
   input:
     tuple val(trimParams), file(reads)
@@ -45,6 +62,8 @@ process fastp_process {
     tuple val(trimParams), \
     path("${reads[0].simpleName}_${trimParams}.fastq"), \
     path("${reads[1].simpleName}_${trimParams}.fastq")
+
+
 
   script:
     String trimParamsStr = trimParams.toString().trim()
@@ -56,11 +75,10 @@ process fastp_process {
     String htmlReport = "${reads[0].simpleName}_${trimParams}.html"
     String jsonReport = "${reads[0].simpleName}_${trimParams}.json"
     fastpCmd += " --html ${htmlReport} --json ${jsonReport}"
-
     def parts = trimParamsStr.tokenize('_')
 
     def trimActionMap = [
-    QualityTrim: { String q -> 
+    QualityTrim: { String q ->
       "--qualified_quality_phred ${q.replace('Q', '')}" 
     },
     AdapterTrim: { String q -> 
@@ -71,7 +89,7 @@ process fastp_process {
       "--length_required ${length}" 
     },
     ComplexityFilter: { _ -> 
-      "--low_complexity_filter" 
+      "--low_complexity_filter"
     },
     SlidingWindow: { String windowSize, String meanQuality -> 
       "--cut_right --cut_window_size ${windowSize.replace('nt', '')} " +
@@ -147,44 +165,86 @@ process fastp_process {
     """
 }
 
+process abyss_process {
+    label 'abyss'
+    container "${params.tools_dir}/abyss.sif"
+    publishDir 'scaffolds_abyss', mode: 'copy'
+    tag "${trimParams}"
 
-process spades_process {
-  label 'spades'
+    input:
+    tuple val(trimParams), path(read1), path(read2)
+
+    output:
+    path "abyss_scaffolds_${trimParams}.fasta"
+
+    script:
+    """
+    set -euo pipefail
+    echo "Read1: ${read1}"
+    echo "Read2: ${read2}"
+    echo "Starting ABySS genome assembly for ${trimParams}..."
+    abyss-pe k=96 B=2G name=abyss_output_${trimParams} in='${read1} ${read2}'
+    mv abyss_output_${trimParams}-scaffolds.fa abyss_scaffolds_${trimParams}.fasta
+    echo "ABySS genome assembly for ${trimParams} completed successfully."
+    """
+}
+
+process clover_process {
+  label 'clover'
   tag "${trimParams}"
+  publishDir 'scaffolds_clover', mode: 'copy'
 
   input:
-    tuple val(trimParams), path(read1), path(read2)
-    
-  output:
-    path "scaffolds_${trimParams}.fasta"
+    tuple val(trimParams), path(read1), path(read2)  
 
-  cpus 4
-  memory '8 GB'
+  output:
+    path "clover_scaffolds_${trimParams}.fasta"
 
   script:
     """
     set -euo pipefail
     echo "Read1: ${read1}"
     echo "Read2: ${read2}"
+    echo "Starting Clover genome assembly for ${trimParams}..."
+    clover.sif clover -k 50 -p 1 -i1 ${read1} -i2 ${read2} -is 300 -ml 500 -sp 0.3 -hp 0.8 -rp 0.8 -o clover_output_${trimParams} //use absolute path for this container
+    mv clover_output_${trimParams}_scaffold.fasta clover_scaffolds_${trimParams}.fasta
+    echo "Clover genome assembly for ${trimParams} completed successfully."
+    """
+}
+
+process spades_process {
+  label 'spades'
+  tag "${trimParams}"
+  container "${params.tools_dir}/spades.sif"
+  publishDir 'scaffolds_spades', mode: 'copy'
+
+  input:
+    tuple val(trimParams), path(read1), path(read2)
+
+  output:
+    path "spades_scaffolds_${trimParams}.fasta"
+
+  script:
+    """
+    set -euo pipefail
+    echo "Read1: ${read1}"
+    echo "Read2: ${read2}
     echo "Starting SPAdes genome assembly for ${trimParams}..."
     spades.py --isolate -1 ${read1} -2 ${read2} -o output_${trimParams}
-    mv output_${trimParams}/scaffolds.fasta scaffolds_${trimParams}.fasta
+    mv output_${trimParams}/scaffolds.fasta spades_scaffolds_${trimParams}.fasta
     echo "SPAdes genome assembly for ${trimParams} completed successfully."
     """
 }
 
-
 process quast_process {
   label 'quast'
+  container "${params.tools_dir}/quast.sif"
 
   input:
     path genomes
 
   output:
     path "reports"
-
-  cpus 4
-  memory '8 GB'
 
   script:
     """
@@ -202,15 +262,40 @@ process quast_process {
     """
 }
 
-
 workflow {
+  seqtk_process(seqtkInputChannel)
+    .map { sampleId, files -> 
+      tuple(sampleId, files) 
+    }
+    .set { seqtkOutputChannel }
+
+  Channel
+    .from(trimmingCombinations)
+    .combine(seqtkOutputChannel)
+    .map { trimParams, sampleId, files -> 
+      println("Trim Params: ${trimParams}, Files: ${files}") 
+      tuple(trimParams, files) 
+    }
+    .set { trimmingChannel }
+
   fastp_process(trimmingChannel)
     .groupTuple()
     .set { fastpCollectChannel }
 
   spades_process(fastpCollectChannel)
     .collect()
-    .set { quastInputChannel }
+    .set { spadesOutputChannel }
+
+  abyss_process(fastpCollectChannel)
+    .collect()
+    .set { abyssOutputChannel }
+
+  clover_process(fastpCollectChannel)
+    .collect()
+    .set { cloverOutputChannel }
+
+  quastInputChannel = spadesOutputChannel
+    .concat( cloverOutputChannel, abyssOutputChannel )
 
   quast_process(quastInputChannel)
 }

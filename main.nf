@@ -228,7 +228,7 @@ process spades_process {
     """
     set -euo pipefail
     echo "Read1: ${read1}"
-    echo "Read2: ${read2}
+    echo "Read2: ${read2}"
     echo "Starting SPAdes genome assembly for ${trimParams}..."
     spades.py --isolate -1 ${read1} -2 ${read2} -o output_${trimParams}
     mv output_${trimParams}/scaffolds.fasta spades_scaffolds_${trimParams}.fasta
